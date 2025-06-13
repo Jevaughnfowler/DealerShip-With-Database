@@ -13,6 +13,14 @@ import java.util.List;
 
 public class DealershipFileManager {
 
+
+    public Dealership getDealership() {
+        Dealership dealership = null;
+
+        return dealership;
+    }
+
+
     public List<Vehicle> getVehiclesByPrice(double min, double max) {
         List<Vehicle> vehicles = new ArrayList<>();
 
@@ -83,9 +91,5 @@ public class DealershipFileManager {
         }
     }
 
-    public Dealership getDealership() {
-        Dealership dealership = null;
 
-        return dealership;
-    }
 }
