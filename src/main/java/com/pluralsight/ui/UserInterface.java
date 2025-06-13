@@ -1,13 +1,16 @@
 package com.pluralsight.ui;
 
-import com.pluralsight.data.MySqlVehicleDao;
-import com.pluralsight.models.Vehicle;
+import com.pluralsight.data.*;
+import com.pluralsight.models.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class UserInterface {
     private final Console console = new Console();
-    private final MySqlVehicleDao vehicleDao = new MySqlVehicleDao(); // Directly use MySQL DAO
+    private final MySqlVehicleDao vehicleDao = new MySqlVehicleDao();
+    private final SalesContractDao saleContractDao = new MySqlSaleContractDao();
+    private final LeaseContractDao leaseContractDao = new MySqlLeaseContractDao();
 
     public void display() {
         int choice;
@@ -25,6 +28,10 @@ public class UserInterface {
                 case 7 -> processAllVehiclesRequest();
                 case 8 -> processAddVehicle();
                 case 9 -> processRemoveVehicle();
+                case 10 -> listAllSalesContracts();
+                case 11 -> addNewSaleContract();
+                case 12 -> listAllLeaseContracts();
+                case 13 -> addNewLeaseContract();
                 case 99 -> System.out.println("Goodbye!");
                 default -> System.out.println("Invalid option. Please try again.");
             }
@@ -33,20 +40,24 @@ public class UserInterface {
 
     private void displayMenu() {
         System.out.println("""
-                ++++++++++++++++++++++++
-                    Dealership Menu
-                ++++++++++++++++++++++++
-                1 - Find vehicles within a price range
-                2 - Find vehicles by make / model
-                3 - Find vehicles by year range
-                4 - Find vehicles by color
-                5 - Find vehicles by mileage range
-                6 - Find vehicles by type (car, truck, SUV, van)
-                7 - List ALL vehicles
-                8 - Add a vehicle
-                9 - Remove a vehicle
-                99 - Quit
-                """);
+            ++++++++++++++++++++++++
+                Dealership Menu
+            ++++++++++++++++++++++++
+            1 - Find vehicles within a price range
+            2 - Find vehicles by make / model
+            3 - Find vehicles by year range
+            4 - Find vehicles by color
+            5 - Find vehicles by mileage range
+            6 - Find vehicles by type (car, truck, SUV, van)
+            7 - List ALL vehicles
+            8 - Add a vehicle
+            9 - Remove a vehicle
+            10 - List ALL sales contracts
+            11 - Add a new sale contract
+            12 - List ALL lease contracts
+            13 - Add a new lease contract
+            99 - Quit
+            """);
         System.out.print("Choose an option: ");
     }
 
@@ -127,4 +138,68 @@ public class UserInterface {
         vehicleDao.removeVehicle(vin);
         System.out.println("Vehicle removed successfully (if it existed).");
     }
+
+    private void listAllSalesContracts() {
+        List<SalesContract> sales = saleContractDao.getAllSales();
+        if (sales.isEmpty()) {
+            System.out.println("No sales contracts found.");
+        } else {
+            for (SalesContract sale : sales) {
+                System.out.println(sale);
+            }
+        }
+    }
+
+    private void addNewSaleContract() {
+        int dealershipId = console.promptForInt("Enter dealership ID: ");
+        String vin = console.promptForString("Enter vehicle VIN: ");
+        String customerName = console.promptForString("Enter customer name: ");
+        String saleDateStr = console.promptForString("Enter sale date (YYYY-MM-DD): ");
+        double salePrice = console.promptForDouble("Enter sale price: ");
+
+        SalesContract sale = new SalesContract(0, dealershipId, vin, customerName, LocalDate.parse(saleDateStr), salePrice);
+        saleContractDao.addSale(sale);
+        System.out.println("Sale contract added successfully.");
+    }
+
+    private void listAllLeaseContracts() {
+        List<LeaseContract> leases = leaseContractDao.getAllLeases();
+        if (leases.isEmpty()) {
+            System.out.println("No lease contracts found.");
+        } else {
+            for (LeaseContract lease : leases) {
+                System.out.println(lease);
+            }
+        }
+    }
+
+    private void addNewLeaseContract() {
+        String customerName = console.promptForString("Enter customer name: ");
+        String customerEmail = console.promptForString("Enter customer email: ");
+        String vin = console.promptForString("Enter vehicle VIN: ");
+        String leaseDateStr = console.promptForString("Enter lease date (YYYY-MM-DD): ");
+        double leasePrice = console.promptForDouble("Enter lease price: ");
+        double taxAmount = console.promptForDouble("Enter tax amount: ");
+        double expectedEndValue = console.promptForDouble("Enter expected end value: ");
+        double leaseFee = console.promptForDouble("Enter lease fee: ");
+        double totalPrice = console.promptForDouble("Enter total price: ");
+        double monthlyPayment = console.promptForDouble("Enter monthly payment: ");
+
+        LeaseContract lease = new LeaseContract(
+                customerName,
+                customerEmail,
+                vin,
+                LocalDate.parse(leaseDateStr),
+                leasePrice,
+                taxAmount,
+                expectedEndValue,
+                leaseFee,
+                totalPrice,
+                monthlyPayment
+        );
+
+        leaseContractDao.addLease(lease);
+        System.out.println("✅ Lease contract added successfully.");
+    }
+
 }

@@ -3,7 +3,7 @@ package com.pluralsight.models;
 import java.time.LocalDate;
 
 public class SalesContract {
-    private int id;
+    private int dealershipId;
     private String customerName;
     private String customerEmail;
     private String vin;
@@ -14,7 +14,7 @@ public class SalesContract {
     private double totalPrice;
     private boolean finance;
 
-    public SalesContract() {
+    public SalesContract(int i, int dealershipId, String vin, String customerName, LocalDate parse, double salePrice) {
     }
 
     public SalesContract(String customerName, String customerEmail, String vin,
@@ -33,12 +33,12 @@ public class SalesContract {
 
     // Getters and Setters
 
-    public int getId() {
-        return id;
+    public int getDealershipId() {
+        return dealershipId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setDealershipId(int dealershipId) {
+        this.dealershipId = dealershipId;
     }
 
     public String getCustomerName() {
