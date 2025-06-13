@@ -1,7 +1,7 @@
 package com.pluralsight.models;
 
 public class Vehicle {
-    private int vin;
+    private String vin;         // changed from int to String
     private int year;
     private String make;
     private String model;
@@ -10,7 +10,7 @@ public class Vehicle {
     private int odometer;
     private double price;
 
-    public Vehicle(int vin, int year, String make, String model, String vehicleType, String color, int odometer, double price) {
+    public Vehicle(String vin, int year, String make, String model, String vehicleType, String color, int odometer, double price) {
         this.vin = vin;
         this.year = year;
         this.make = make;
@@ -21,7 +21,7 @@ public class Vehicle {
         this.price = price;
     }
 
-    public int getVin() { return vin; }
+    public String getVin() { return vin; }
     public int getYear() { return year; }
     public String getMake() { return make; }
     public String getModel() { return model; }
@@ -32,7 +32,7 @@ public class Vehicle {
 
     @Override
     public String toString() {
-        return String.format("VIN: %d | Year: %d | Make: %s | Model: %s | Type: %s | Color: %s | Odometer: %,d | Price: $%,.2f",
+        return String.format("VIN: %s | Year: %d | Make: %s | Model: %s | Type: %s | Color: %s | Odometer: %,d | Price: $%,.2f",
                 vin, year, make, model, vehicleType, color, odometer, price);
     }
 }

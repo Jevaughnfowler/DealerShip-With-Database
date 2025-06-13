@@ -23,7 +23,9 @@ public class Dealership {
     public List<Vehicle> getAllVehicles() { return inventory; }
     public void setInventory(List<Vehicle> inventory) { this.inventory = inventory; }
     public void addVehicle(Vehicle vehicle) { inventory.add(vehicle); }
-    public void removeVehicle(int vin) { inventory.removeIf(v -> v.getVin() == vin); }
+    public void removeVehicle(String vin) {
+        inventory.removeIf(v -> v.getVin().equals(vin));
+    }
 
     public List<Vehicle> getVehiclesByPrice(double min, double max) {
         List<Vehicle> result = new ArrayList<>();

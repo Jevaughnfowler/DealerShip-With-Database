@@ -1,47 +1,64 @@
 
 package com.pluralsight.models;
 
+import com.pluralsight.data.DatabaseManager;
+
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DealershipFileManager {
 
-    // Loads dealership info and inventory from inventory.csv
-    public Dealership getDealership() {
-        Dealership dealership = null;
+    public List<Vehicle> getVehiclesByPrice(double min, double max) {
+        List<Vehicle> vehicles = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("inventory.csv"))) {
-            // Read first line for dealership info
-            String dealershipLine = reader.readLine();
-            if (dealershipLine != null) {
-                String[] dealershipParts = dealershipLine.split("\\|");
-                String name = dealershipParts[0];
-                String address = dealershipParts[1];
-                String phone = dealershipParts[2];
+        String sql = """
+        SELECT
+                      vin,
+                      make,
+                      model,
+                      year_of_veh,
+                      mileage,
+                      color,
+                      type_of_veh,
+                      price
+                    FROM vehicles
+                    WHERE price BETWEEN ? AND ?
+    """;
 
-                dealership = new Dealership(name, address, phone);
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                // Read remaining lines for vehicle inventory
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    int vin = Integer.parseInt(parts[0]);
-                    int year = Integer.parseInt(parts[1]);
-                    String make = parts[2];
-                    String model = parts[3];
-                    String type = parts[4];
-                    String color = parts[5];
-                    int odometer = Integer.parseInt(parts[6]);
-                    double price = Double.parseDouble(parts[7]);
+            stmt.setDouble(1, min);
+            stmt.setDouble(2, max);
 
-                    Vehicle vehicle = new Vehicle(vin, year, make, model, type, color, odometer, price);
-                    dealership.addVehicle(vehicle);
-                }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Vehicle v = new Vehicle(
+                        rs.getString("vin"),
+                        rs.getInt("year"),
+                        rs.getString("make"),
+                        rs.getString("model"),
+                        rs.getString("type"),
+                        rs.getString("color"),
+                        rs.getInt("odometer"),
+                        rs.getDouble("price")
+                );
+
+                // You can also include the dealership name if needed
+                System.out.println("From Dealership: " + rs.getString("dealership_name"));
+                vehicles.add(v);
             }
-        } catch (IOException e) {
-            System.out.println("Error reading inventory file: " + e.getMessage());
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
         }
 
-        return dealership;
+        return vehicles;
     }
 
     // Saves dealership info and inventory to inventory.csv
@@ -64,5 +81,11 @@ public class DealershipFileManager {
         } catch (IOException e) {
             System.out.println("Error saving inventory: " + e.getMessage());
         }
+    }
+
+    public Dealership getDealership() {
+        Dealership dealership = null;
+
+        return dealership;
     }
 }
